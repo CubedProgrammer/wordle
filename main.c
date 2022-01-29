@@ -5,10 +5,12 @@
 #ifdef _WIN32
 #include<conio.h>
 #include<windows.h>
+#define mssleep Sleep
 #else
 #include<string.h>
 #include<termios.h>
 #include<unistd.h>
+#define mssleep(ms)usleep((ms)*1000)
 #endif
 #include"load.h"
 #define FACTOR 25214903917
@@ -27,13 +29,14 @@ int isword(char **dic, size_t diclen, const char *search)
 }
 void play(int attempts)
 {
+    puts("Take your guesses!");
     size_t diclen = gh_cp_wordle____cnt;
     char **dic = gh_cp_wordle____ls;
-    uint32_t ind = seed;
+    uint32_t ind = seed % diclen;
     char *target = dic[ind];
     char txt[6];
     char ch;
-    int chcnt;
+    int chcnt = 0;
     while(attempts)
     {
         ch = rdchr();
@@ -69,10 +72,7 @@ checkreturn:
                 if(chcnt == 5)
                 {
                     txt[5] = '\0';
-                    if(isword(dic, diclen, txt))
-                    {
-                    }
-                    else
+                    if(!isword(dic, diclen, txt))
                     {
                         ring;
                         goto checkreturn;
@@ -86,6 +86,24 @@ checkreturn:
             }
         }
         --attempts;
+        putchar('\r');
+        for(int i = 0; i < 5; i++)
+        {
+            if(target[i] == txt[i])
+                fputs("\033\13332m", stdout);
+            else if(strchr(target, txt[i]))
+                fputs("\033\13333m", stdout);
+            else
+                fputs("\033\13331m", stdout);
+            putchar(txt[i]);
+            mssleep(500);
+        }
+        puts("\033\1330m");
+        chcnt = 0;
+        if(strcmp(target, txt) == 0)
+            attempts = 0;
+        else if(attempts == 0)
+            puts(target);
     }
     seed *= FACTOR;
     seed += 11;

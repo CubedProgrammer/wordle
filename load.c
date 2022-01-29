@@ -50,7 +50,6 @@ char **loadfile(size_t *lenp, const char *fname)
         {
             capa += ocapa;
             ocapa = len;
-            vec = realloc(vec, capa);
             vec = realloc(vec, capa * sizeof(const char*));
         }
         vec[len] = malloc(6 * sizeof(char));
