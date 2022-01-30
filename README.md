@@ -13,7 +13,7 @@ clang -static -o wordle load.o main.o usrget.o
 ```
 MSVC
 ```sh
-cl /Fewordle /O2 load.c main.c usrget.c
+cl /Fewordle /O2 load.c main.c usrget.c shlwapi.lib
 ```
 You'll need a reference dictionary file called fivedict.txt, you might find one in the releases tab.
 

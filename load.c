@@ -57,6 +57,22 @@ char **loadfile(size_t *lenp, const char *fname)
         ++len;
     }
     *lenp = len;
+    char *tmp;
+    int cmp;
+    size_t ind;
+    for(size_t i = 1; i < len; i++)
+    {
+        ind = i;
+        cmp = strcmp(vec[ind-1], vec[ind]);
+        while(cmp > 0)
+        {
+            tmp = vec[ind-1];
+            vec[ind-1] = vec[ind];
+            vec[ind] = tmp;
+            --ind;
+            cmp = ind == 0 ? 0 : strcmp(vec[ind-1], vec[ind]);
+        }
+    }
     fclose(fh);
     return vec;
 }
