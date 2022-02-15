@@ -47,7 +47,8 @@ void play(int attempts)
     size_t diclen = gh_cp_wordle____cnt;
     char **dic = gh_cp_wordle____ls;
     uint32_t ind = seed % diclen;
-    char *target = dic[ind];
+    char *target = dic[ind], *tmp;
+    char cpy[6];
     char txt[6];
     char ch;
     int chcnt = 0;
@@ -101,12 +102,21 @@ checkreturn:
         }
         --attempts;
         putchar('\r');
+        strcpy(cpy, target);
+        for(int i = 0; i < 5; i++)
+        {
+            if(target[i] == txt[i])
+                cpy[i] = ' ';
+        }
         for(int i = 0; i < 5; i++)
         {
             if(target[i] == txt[i])
                 fputs("\033\13332m", stdout);
-            else if(strchr(target, txt[i]))
+            else if(tmp = strchr(cpy, txt[i]))
+            {
+                *tmp = ' ';
                 fputs("\033\13333m", stdout);
+            }
             else
                 fputs("\033\13331m", stdout);
             putchar(txt[i]);
