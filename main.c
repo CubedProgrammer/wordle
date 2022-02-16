@@ -51,9 +51,23 @@ void play(int attempts)
     char cpy[6];
     char txt[6];
     char ch;
-    int chcnt = 0;
+    int chcnt = 0, lns = 0;
+    putchar('\n');
+    uint32_t possible_letters = 0x3ffffff, possi;
     while(attempts)
     {
+        printf("\033\133%iF", lns + 1);
+        for(int i = 'a'; i <= 'z'; i++)
+        {
+            possi = possible_letters & 1 << (i - 'a');
+            if(possi)
+                printf("\033\13334m%c", i);
+            else
+                printf("\033\13331m%c", i);
+        }
+        if(lns)
+            printf("\033\133%iB", lns);
+        puts("\033\133m");
         ch = rdchr();
         while(ch != '\n')
         {
@@ -118,12 +132,16 @@ checkreturn:
                 fputs("\033\13333m", stdout);
             }
             else
+            {
+                possible_letters &= ~(1 << (txt[i] - 'a'));
                 fputs("\033\13331m", stdout);
+            }
             putchar(txt[i]);
             mssleep(500);
         }
         puts("\033\1330m");
         chcnt = 0;
+        ++lns;
         if(strcmp(target, txt) == 0)
             attempts = 0;
         else if(attempts == 0)
