@@ -10,6 +10,10 @@
 #include"load.h"
 char **gh_cp_wordle____ls;
 size_t gh_cp_wordle____cnt;
+void loadfile(const char *fname)
+{
+    gh_cp_wordle____ls = loadfile_actual(&gh_cp_wordle____cnt, fname);
+}
 void find_and_load(void)
 {
     const char *choice = "fivedict.txt";
@@ -18,7 +22,7 @@ void find_and_load(void)
 #else
     if(access(choice, F_OK) == 0)
 #endif
-        gh_cp_wordle____ls = loadfile(&gh_cp_wordle____cnt, choice);
+        loadfile(choice);
     else
 #ifdef _WIN32
         fputs("File fivedict.txt not found.\n", stderr);
@@ -30,13 +34,13 @@ void find_and_load(void)
         strcpy(buf + blen, "/.fivedict.txt");
         choice = buf;
         if(access(choice, F_OK) == 0)
-            gh_cp_wordle____ls = loadfile(&gh_cp_wordle____cnt, choice);
+            loadfile(choice);
         else
             fputs("File fivedict.txt not found.\n", stderr);
     }
 #endif
 }
-char **loadfile(size_t *lenp, const char *fname)
+char **loadfile_actual(size_t *lenp, const char *fname)
 {
     FILE *fh = fopen(fname, "r");
     char **vec = malloc(5 * sizeof(const char*));

@@ -173,7 +173,10 @@ int main(int argl, char *argv[])
     int guesses = 6;
     if(argv[1] != NULL)
         guesses = atoi(argv[1]);
-    find_and_load();
+    if(argl >= 3)
+        loadfile(argv[2]);
+    else
+        find_and_load();
     play(guesses);
     for(char again = rdchr(); again != 'q'; again = rdchr())
         play(guesses);
