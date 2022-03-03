@@ -53,17 +53,28 @@ void play(int attempts)
     char ch;
     int chcnt = 0, lns = 0;
     putchar('\n');
-    uint32_t possible_letters = 0x3ffffff, possi;
+    uint64_t possible_letters = 0x5555555555555;
+    int possi, pos;
     while(attempts)
     {
         printf("\033\133%iF", lns + 1);
         for(int i = 'a'; i <= 'z'; i++)
         {
-            possi = possible_letters & 1 << (i - 'a');
-            if(possi)
-                printf("\033\13334m%c", i);
-            else
-                printf("\033\13331m%c", i);
+            possi = possible_letters >> (i - 'a') * 2 & 0b11;
+            switch(possi)
+            {
+                case 3:
+                    printf("\033\13332m%c", i);
+                    break;
+                case 2:
+                    printf("\033\13333m%c", i);
+                    break;
+                case 1:
+                    printf("\033\13334m%c", i);
+                    break;
+                default:
+                    printf("\033\13331m%c", i);
+            }
         }
         if(lns)
             printf("\033\133%iB", lns);
@@ -124,18 +135,28 @@ checkreturn:
         }
         for(int i = 0; i < 5; i++)
         {
+            pos = (txt[i] - 'a') * 2;
+            possi = possible_letters >> pos & 0b11;
             if(target[i] == txt[i])
+            {
                 fputs("\033\13332m", stdout);
+                possi = 3;
+            }
             else if(tmp = strchr(cpy, txt[i]))
             {
                 *tmp = ' ';
                 fputs("\033\13333m", stdout);
+                if(possi <= 1)
+                    possi = 2;
             }
             else
             {
-                possible_letters &= ~(1 << (txt[i] - 'a'));
                 fputs("\033\13331m", stdout);
+                if(possi == 1)
+                    possi = 0;
             }
+            possible_letters &= ~(0b11ull << pos);
+            possible_letters |= (uint64_t)possi << pos;
             putchar(txt[i]);
             mssleep(500);
         }
