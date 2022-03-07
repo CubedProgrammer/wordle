@@ -44,10 +44,10 @@ int isword(char **dic, size_t diclen, const char *search)
 void play(int attempts)
 {
     puts("Take your guesses!");
-    size_t diclen = gh_cp_wordle____cnt;
-    char **dic = gh_cp_wordle____ls;
-    uint32_t ind = seed % diclen;
-    char *target = dic[ind], *tmp;
+    size_t diclen = gh_cp_wordle____cnt, anslen = gh_cp_wordle____ac;
+    char **dic = gh_cp_wordle____ls, **ans = gh_cp_wordle____a;
+    uint32_t ind = seed % anslen;
+    char *target = ans[ind], *tmp;
     char cpy[6];
     char txt[6];
     char ch;
@@ -194,8 +194,11 @@ int main(int argl, char *argv[])
     int guesses = 6;
     if(argv[1] != NULL)
         guesses = atoi(argv[1]);
-    if(argl >= 3)
+    if(argl >= 4)
+    {
         loadfile(argv[2]);
+        loadans(argv[3]);
+    }
     else
         find_and_load();
     play(guesses);
