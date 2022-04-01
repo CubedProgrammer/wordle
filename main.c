@@ -41,7 +41,7 @@ int isword(char **dic, size_t diclen, const char *search)
         found = strcmp(dic[lo], search) == 0;
     return found;
 }
-void play(int attempts)
+void play(int attempts, char anim)
 {
     puts("Take your guesses!");
     size_t diclen = gh_cp_wordle____cnt, anslen = gh_cp_wordle____ac;
@@ -158,7 +158,8 @@ checkreturn:
             possible_letters &= ~(0b11ull << pos);
             possible_letters |= (uint64_t)possi << pos;
             putchar(txt[i]);
-            mssleep(500);
+            if(anim)
+                mssleep(500);
         }
         puts("\033\1330m");
         chcnt = 0;
@@ -192,18 +193,21 @@ int main(int argl, char *argv[])
     setvbuf(stdout, NULL, _IONBF, 0);
     seed = time(NULL) ^ FACTOR;
     int guesses = 6;
+    char anim = 1;
     if(argv[1] != NULL)
         guesses = atoi(argv[1]);
     if(argl >= 4)
     {
         loadfile(argv[2]);
         loadans(argv[3]);
+        if(argl >= 5)
+            anim = 0;
     }
     else
         find_and_load();
-    play(guesses);
+    play(guesses, anim);
     for(char again = rdchr(); again != 'q'; again = rdchr())
-        play(guesses);
+        play(guesses, anim);
 #ifndef _WIN32
     tcsetattr(STDIN_FILENO, TCSANOW, &oldf);
 #endif
