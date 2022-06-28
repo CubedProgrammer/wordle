@@ -194,17 +194,48 @@ int main(int argl, char *argv[])
     seed = time(NULL) ^ FACTOR;
     int guesses = 6;
     char anim = 1;
-    if(argv[1] != NULL)
-        guesses = atoi(argv[1]);
-    if(argl >= 4)
+    char dicts = 0, isguess = 0;
+    const char *dictfn = NULL, *ansfn = NULL;
+    char *arg;
+    for(size_t i = 1; i < argl; ++i)
     {
-        loadfile(argv[2]);
-        loadans(argv[3]);
-        if(argl >= 5)
-            anim = 0;
+        arg = argv[i];
+        if(*arg == '-')
+        {
+            for(size_t j = 1; arg[j] != '\0'; ++j)
+            {
+                switch(arg[j])
+                {
+                    case'a':
+                        anim = 0;
+                        break;
+                    case'd':
+                        dicts = 2;
+                        break;
+                    case'g':
+                        isguess = 1;
+                        break;
+                    default:
+                        printf("Unregonized option -%c, ignoring...\n", arg[j]);
+                }
+            }
+        }
+        else if(dicts == 2)
+            dictfn = arg, --dicts;
+        else if(dicts == 1)
+            ansfn = arg, dicts = 0;
+        else if(isguess)
+            guesses = atoi(arg), isguess = 0;
+        else
+            printf("\033\13331mUnused command line argument %s.\033\133m\n", arg);
     }
-    else
+    if(dictfn == NULL && ansfn == NULL)
         find_and_load();
+    else
+    {
+        loadfile(dictfn);
+        loadans(ansfn);
+    }
     play(guesses, anim);
     for(char again = rdchr(); again != 'q'; again = rdchr())
         play(guesses, anim);
